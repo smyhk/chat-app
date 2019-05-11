@@ -1,0 +1,14 @@
+{
+  "name": "chat-app",
+  "version": "0.1.0",
+  "description": "express chat app using websockets",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Steve Kedzie",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
