@@ -22,11 +22,12 @@ socket.on('message', msg => {
   $messages.insertAdjacentHTML('beforeend', html);
 });
 
-// geolocation event handler
-socket.on('locationMessage', locationUrl => {
-  console.log(locationUrl);
+// geolocation event listener
+socket.on('locationMessage', location => {
+  console.log(location);
   const html = Mustache.render(locationTemplate, {
-    location: locationUrl
+    location: location.url,
+    createdAt: moment(location.createdAt).format('h:mm a')
   });
   $messages.insertAdjacentHTML('beforeend', html);
 });
