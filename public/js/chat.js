@@ -12,6 +12,7 @@ const $messages = document.querySelector('#messages');
 const messageTemplate = document.querySelector('#message-template').innerHTML;
 const locationTemplate = document.querySelector('#location-template').innerHTML;
 
+// message event handler
 socket.on('message', msg => {
   console.log(msg);
   const html = Mustache.render(messageTemplate, {
@@ -20,6 +21,7 @@ socket.on('message', msg => {
   $messages.insertAdjacentHTML('beforeend', html);
 });
 
+// geolocation event handler
 socket.on('locationMessage', locationUrl => {
   console.log(locationUrl);
   const html = Mustache.render(locationTemplate, {

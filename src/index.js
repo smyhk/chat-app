@@ -1,49 +1,57 @@
-const express = require('express')
-const http = require('http')
-const path = require('path')
-const socketio = require('socket.io')
-const Filter = require('bad-words')
+const express = require('express');
+const http = require('http');
+const path = require('path');
+const socketio = require('socket.io');
+const Filter = require('bad-words');
 
-const app = express()
-const server = http.createServer(app)
-const io = socketio(server)
+const app = express();
+const server = http.createServer(app);
+const io = socketio(server);
 
-const port = process.env.PORT || 3000
-const publicDirectoryPath = path.join(__dirname, '../public')
+const port = process.env.PORT || 3000;
+const publicDirectoryPath = path.join(__dirname, '../public');
 
-app.use(express.static(publicDirectoryPath))
+app.use(express.static(publicDirectoryPath));
 
+// listen for connection event
 io.on('connection', socket => {
-  console.info('New WebSocket connection')
+  console.info('New WebSocket connection');
 
-  socket.emit('message', 'Welcome!')
-  socket.broadcast.emit('message', 'A new user has joined')
+  // send new user a welcome message
+  socket.emit('message', 'Welcome!');
 
+  // send all other users a message when a new user connects
+  socket.broadcast.emit('message', 'A new user has joined');
+
+  // chat message handler
   socket.on('sendMessage', (message, callback) => {
-    const filter = new Filter()
+    const filter = new Filter();
     if (filter.isProfane(message)) {
-      return callback('Profanity is not allowed')
+      return callback('Profanity is not allowed');
     }
 
-    io.emit('message', message)
-    callback()
-  })
+    // sends data to all connected sockets
+    io.emit('message', message);
+    callback();
+  });
 
+  // listens for a user disconnet event
   socket.on('disconnect', () => {
-    io.emit('message', 'A user has left')
-  })
+    io.emit('message', 'A user has left');
+  });
 
+  // geolocation handler
   socket.on('sendLocation', (position, callback) => {
     let message = `https://google.com/maps?q=${position.latitude},${
       position.longitude
-    }`
-    io.emit('locationMessage', message)
-    callback()
-  })
-})
+    }`;
+    io.emit('locationMessage', message);
+    callback();
+  });
+});
 
 server.listen(port, err => {
-  if (err) console.error('Server could not start')
+  if (err) console.error('Server could not start');
 
-  console.info(`Server listening on port ${port}`)
-})
+  console.info(`Server listening on port ${port}`);
+});
