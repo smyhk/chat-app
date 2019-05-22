@@ -22,11 +22,17 @@ app.use(express.static(publicDirectoryPath));
 io.on('connection', socket => {
   console.info('New WebSocket connection');
 
-  // send new user a welcome message
-  socket.emit('message', generateMessage('Welcome!'));
+  socket.on('join', ({ username, room }) => {
+    socket.join(room);
 
-  // send all other users a message when a new user connects
-  socket.broadcast.emit('message', generateMessage('A new user has joined'));
+    // send new user a welcome message
+    socket.emit('message', generateMessage('Welcome!'));
+
+    // send all other users a message when a new user connects (room)
+    socket.broadcast
+      .to(room)
+      .emit('message', generateMessage(`${username} has joined`));
+  });
 
   // chat message handler
   socket.on('sendMessage', (message, callback) => {
@@ -36,7 +42,7 @@ io.on('connection', socket => {
     }
 
     // sends data to all connected sockets
-    io.emit('message', generateMessage(message));
+    io.to('steve').emit('message', generateMessage(message));
     callback();
   });
 
