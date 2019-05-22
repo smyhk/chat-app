@@ -4,6 +4,8 @@ const path = require('path');
 const socketio = require('socket.io');
 const Filter = require('bad-words');
 
+const { generateMessage } = require('../src/utils/messages');
+
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
@@ -18,10 +20,10 @@ io.on('connection', socket => {
   console.info('New WebSocket connection');
 
   // send new user a welcome message
-  socket.emit('message', 'Welcome!');
+  socket.emit('message', generateMessage('Welcome!'));
 
   // send all other users a message when a new user connects
-  socket.broadcast.emit('message', 'A new user has joined');
+  socket.broadcast.emit('message', generateMessage('A new user has joined'));
 
   // chat message handler
   socket.on('sendMessage', (message, callback) => {
@@ -31,13 +33,13 @@ io.on('connection', socket => {
     }
 
     // sends data to all connected sockets
-    io.emit('message', message);
+    io.emit('message', generateMessage(message));
     callback();
   });
 
   // listens for a user disconnet event
   socket.on('disconnect', () => {
-    io.emit('message', 'A user has left');
+    io.emit('message', generateMessage('A user has left'));
   });
 
   // geolocation handler
