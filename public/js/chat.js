@@ -10,7 +10,7 @@ const $messages = document.querySelector('#messages');
 
 // templates
 const messageTemplate = document.querySelector('#message-template').innerHTML;
-const locationTemplate = document.querySelector('#location-template').innerHTML
+const locationTemplate = document.querySelector('#location-template').innerHTML;
 
 socket.on('message', msg => {
   console.log(msg);
@@ -21,12 +21,12 @@ socket.on('message', msg => {
 });
 
 socket.on('locationMessage', locationUrl => {
-  console.log(locationUrl)
+  console.log(locationUrl);
   const html = Mustache.render(locationTemplate, {
     location: locationUrl
   });
   $messages.insertAdjacentHTML('beforeend', html);
-})
+});
 
 $messageForm.addEventListener('submit', e => {
   e.preventDefault();
