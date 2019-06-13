@@ -32,12 +32,6 @@ const addUser = ({ id, username, room }) => {
   };
 };
 
-// addUser({
-//   id: 22,
-//   username: 'Steve',
-//   room: 'Dangle'
-// });
-
 // remove a user from room by id
 const removeUser = id => {
   const index = users.findIndex(user => user.id === id);

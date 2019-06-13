@@ -5,6 +5,13 @@ const socketio = require('socket.io');
 const Filter = require('bad-words');
 
 const {
+  addUser,
+  removeUser,
+  getUser,
+  getUsersInRoom
+} = require('../src/utils/users');
+
+const {
   generateMessage,
   generateLocationMessage
 } = require('../src/utils/messages');
@@ -22,16 +29,25 @@ app.use(express.static(publicDirectoryPath));
 io.on('connection', socket => {
   console.info('New WebSocket connection');
 
-  socket.on('join', ({ username, room }) => {
-    socket.join(room);
+  socket.on('join', ({ username, room }, callback) => {
+    const { error, user } = addUser({ id: socket.id, username, room });
+
+    if (error) {
+      return callback(error);
+    }
+
+    socket.join(user.room);
 
     // send new user a welcome message
     socket.emit('message', generateMessage('Welcome!'));
 
     // send all other users a message when a new user connects (room)
     socket.broadcast
-      .to(room)
-      .emit('message', generateMessage(`${username} has joined`));
+      .to(user.room)
+      .emit('message', generateMessage(`${user.username} has joined`));
+
+    // user joined with no errors
+    callback();
   });
 
   // chat message handler
@@ -48,7 +64,14 @@ io.on('connection', socket => {
 
   // listens for a user disconnet event
   socket.on('disconnect', () => {
-    io.emit('message', generateMessage('A user has left'));
+    const user = removeUser(socket.id);
+
+    if (user) {
+      io.to(user.room).emit(
+        'message',
+        generateMessage(`${user.username} has left`)
+      );
+    }
   });
 
   // geolocation handler
