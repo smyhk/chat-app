@@ -32,11 +32,11 @@ const addUser = ({ id, username, room }) => {
   };
 };
 
-addUser({
-  id: 22,
-  username: 'Steve',
-  room: 'Dangle'
-});
+// addUser({
+//   id: 22,
+//   username: 'Steve',
+//   room: 'Dangle'
+// });
 
 // remove a user from room by id
 const removeUser = id => {
@@ -47,10 +47,21 @@ const removeUser = id => {
   }
 };
 
-const removed = removeUser(22);
-console.log(removed);
-console.log(users);
+// get a single user
+const getUser = id => {
+  return users.find(user => user.id === id);
+};
 
-// get user
+// get list of users in a room
+const getUsersInRoom = room => {
+  room = room.trim().toLowerCase();
 
-// get list if users in a room
+  return (usersInRoom = users.filter(user => user.room === room));
+};
+
+module.exports = {
+  addUser,
+  removeUser,
+  getUser,
+  getUsersInRoom
+};
