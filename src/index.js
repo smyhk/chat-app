@@ -52,13 +52,15 @@ io.on('connection', socket => {
 
   // chat message handler
   socket.on('sendMessage', (message, callback) => {
+    const user = getUser(socket.id);
+
     const filter = new Filter();
     if (filter.isProfane(message)) {
       return callback('Profanity is not allowed');
     }
 
     // sends data to all connected sockets
-    io.to('steve').emit('message', generateMessage(message));
+    io.to(user.room).emit('message', generateMessage(message));
     callback();
   });
 
@@ -76,10 +78,12 @@ io.on('connection', socket => {
 
   // geolocation handler
   socket.on('sendLocation', (position, callback) => {
+    const user = getUser(socket.id);
+
     let url = `https://google.com/maps?q=${position.latitude},${
       position.longitude
     }`;
-    io.emit('locationMessage', generateLocationMessage(url));
+    io.to(user.room).emit('locationMessage', generateLocationMessage(url));
     callback();
   });
 });
