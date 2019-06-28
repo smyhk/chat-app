@@ -39,12 +39,12 @@ io.on('connection', socket => {
     socket.join(user.room);
 
     // send new user a welcome message
-    socket.emit('message', generateMessage('Welcome!'));
+    socket.emit('message', generateMessage('Admin', 'Welcome!'));
 
     // send all other users a message when a new user connects (room)
     socket.broadcast
       .to(user.room)
-      .emit('message', generateMessage(`${user.username} has joined`));
+      .emit('message', generateMessage('Admin', `${user.username} has joined`));
 
     // user joined with no errors
     callback();
@@ -60,7 +60,7 @@ io.on('connection', socket => {
     }
 
     // sends data to all connected sockets
-    io.to(user.room).emit('message', generateMessage(message));
+    io.to(user.room).emit('message', generateMessage(user.username, message));
     callback();
   });
 
@@ -71,7 +71,7 @@ io.on('connection', socket => {
     if (user) {
       io.to(user.room).emit(
         'message',
-        generateMessage(`${user.username} has left`)
+        generateMessage('Admin', `${user.username} has left`)
       );
     }
   });
@@ -83,7 +83,10 @@ io.on('connection', socket => {
     let url = `https://google.com/maps?q=${position.latitude},${
       position.longitude
     }`;
-    io.to(user.room).emit('locationMessage', generateLocationMessage(url));
+    io.to(user.room).emit(
+      'locationMessage',
+      generateLocationMessage(user.username, url)
+    );
     callback();
   });
 });
